@@ -1,0 +1,12 @@
+/* Remove margins and padding on page */
+body {
+    padding: 0;
+    margin: 0;
+}
+
+/* Make Map whole page */
+#map,
+body,
+html {
+height: 100%;
+}
