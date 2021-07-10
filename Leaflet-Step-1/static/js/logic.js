@@ -18,31 +18,31 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 function sizeCircle(magnitude) {
-    return magnitude * 4;
+    return magnitude * 3;
 };
 
-function colorCircle(depth) {
-    if (depth >= 8) {
+function colorCircle(depth, max) {
+    if (depth >= 400) {
         color = "red";
     }
-    else if (depth <= 7.9 && depth >= 7) {
+    else if (depth <= 400) {
         color = "orange";
     }
-    else if (depth <= 6.9 && depth >= 6) {
+    else if (depth <= 300) {
         color = "yellow";
     }
-    else if (depth <= 5.9 && depth >= 5) {
+    else if (depth <= 200) {
         color = "green";
     }
-    else if (depth <= 4.9 && depth >= 4) {
+    else if (depth <= 100) {
         color = "blue";
     }
-    else if (depth <= 3.9) {
+    else if (depth <= 0) {
         color = "grey";
     };
 
     return color;
-}
+};
 // Access data from link
 d3.json(url).then(data => {
     console.log(data);
@@ -67,30 +67,36 @@ d3.json(url).then(data => {
         var place = properties.place;
         var magnitude = properties.mag;
         // Current time
-        var time = Date(properties.time);
+        var time = moment(properties.time);
 
         // cluster_group.addLayer((L.marker([coordinates[1], coordinates[0]]))
         //     .bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}`));
 
-        L.circleMarker([coordinates[1], coordinates[0]], {
+        L.circleMarker([latitude, longitude], {
             color: "white",
-            fillColor: colorCircle(depth),
+            fillColor: colorCircle(depth, max),
             fillOpactiy: 0.6,
             radius: sizeCircle(magnitude)
-        }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}`).addTo(myMap);
+        }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}<br/>Depth: ${depth}<br>Time: ${time}`).addTo(myMap);
 
         // console.log(coordinates);
 
     }
 
+    console.log(Date(features[1000].properties.time));
+
     // Find min and max of depth
     var min = Math.min.apply(Math, depth_array);
     var max = Math.max.apply(Math, depth_array);
+    var depth_range = max - min;
+
+
 
     // console.log(data.features);
     
     console.log(min);
     console.log(max);
+    console.log(depth_range);
 
 
     // myMap.addLayer(cluster_group);
