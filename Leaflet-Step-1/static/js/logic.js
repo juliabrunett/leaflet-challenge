@@ -25,22 +25,22 @@ function sizeCircle(magnitude) {
 // Function to color the circle by depth
 function colorCircle(depth) {
     if (depth >= 90) {
-        color = "#ffffb2";
+        color = "#bd0026";
     }
     else if (depth < 90 && depth >= 70) {
-        color = "#fed976";
-    }
-    else if (depth < 70 && depth >= 50) {
-        color = "#feb24c";
-    }
-    else if (depth < 50 && depth >= 30) {
-        color = "#fd8d3c";
-    }
-    else if (depth < 30 && depth >= 10) {
         color = "#f03b20";
     }
+    else if (depth < 70 && depth >= 50) {
+        color = "#fd8d3c";
+    }
+    else if (depth < 50 && depth >= 30) {
+        color = "#feb24c";
+    }
+    else if (depth < 30 && depth >= 10) {
+        color = "#fed976";
+    }
     else if (depth < 10 && depth >= -10) {
-        color = "#bd0026";
+        color = "#ffffb2";
     };
 
     // ['#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026']
@@ -82,8 +82,9 @@ d3.json(url).then(data => {
         //     .bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}`));
 
         // Create markers
-        L.circleMarker([latitude, longitude], {
-            color: "white",
+        circles = L.circleMarker([latitude, longitude], {
+            color: "black",
+            weight: 1,
             fillColor: colorCircle(depth),
             opactiy: 1,
             fillOpacity: 1,
@@ -92,7 +93,47 @@ d3.json(url).then(data => {
 
         // console.log(coordinates);
 
+    };
+
+    // Create info title
+    var info = L.control({position: "topright"});
+
+    // Define function when info is added
+    info.onAdd = function() {
+        var div = L.DomUtil.create("div", "info");
+        var title = "<h1>Earthquakes in the Last 7 Days</h1>"
+        div.innerHTML = title;
+
+        return div
     }
+
+    // Create Legend
+    var legend = L.control({ position: "bottomright" });
+
+    // Define function when legend is added
+    legend.onAdd = function() {
+        var div = L.DomUtil.create("div", "legend");
+        var limits = [-10, 10, 30, 50, 70, 90];
+        var labels = [];
+        var title = "<h2>Depth in Miles</h2>"
+
+
+        div.innerHTML = title;
+
+        // Loop through limits, and create a new legend line
+        for (var i = 0; i < limits.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + colorCircle(limits[i] + 1) + '"></i> ' +
+                limits[i] + (limits[i + 1] ? '&ndash;' + limits[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+
+    // Add the legend to the map
+    legend.addTo(myMap);
+
+    info.addTo(myMap);
 
     // Find min and max of depth
     // var min = Math.min.apply(Math, depth_array);
