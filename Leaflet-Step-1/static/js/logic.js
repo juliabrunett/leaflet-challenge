@@ -19,7 +19,7 @@ var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.ge
 
 // Function to size the circle by magnitude
 function sizeCircle(magnitude) {
-    return magnitude * 3;
+    return magnitude * 4;
 };
 
 // Function to color the circle by depth
@@ -42,8 +42,6 @@ function colorCircle(depth) {
     else if (depth < 10 && depth >= -10) {
         color = "#ffffb2";
     };
-
-    // ['#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026']
 
     return color;
 };
@@ -89,7 +87,7 @@ d3.json(url).then(data => {
             opactiy: 1,
             fillOpacity: 1,
             radius: sizeCircle(magnitude)
-        }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}<br/>Depth: ${depth}<br>Time: ${time}`).addTo(myMap);
+        }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}<br/>Depth: ${depth} km<br>Time: ${time}`).addTo(myMap);
 
         // console.log(coordinates);
 
@@ -114,10 +112,9 @@ d3.json(url).then(data => {
     legend.onAdd = function() {
         var div = L.DomUtil.create("div", "legend");
         var limits = [-10, 10, 30, 50, 70, 90];
-        var labels = [];
-        var title = "<h2>Depth in Miles</h2>"
+        var title = "<h2>Depth in km</h2>"
 
-
+        // Add title to div
         div.innerHTML = title;
 
         // Loop through limits, and create a new legend line
@@ -130,21 +127,14 @@ d3.json(url).then(data => {
         return div;
     };
 
-    // Add the legend to the map
+    // Add the legend & the info title to the map
     legend.addTo(myMap);
-
     info.addTo(myMap);
-
-    // Find min and max of depth
-    // var min = Math.min.apply(Math, depth_array);
-    // var max = Math.max.apply(Math, depth_array);
-    // console.log(min);
-    // console.log(max);
 
     // Cluster Group Version
     // myMap.addLayer(cluster_group);
 
-    // Add all to map
+    // Beginning Version: Add all to map
     // L.geoJson(data).addTo(myMap);
 })
 

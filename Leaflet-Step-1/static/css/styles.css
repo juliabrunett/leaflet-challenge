@@ -33,5 +33,6 @@ height: 100%;
     line-height: 18px;
     background-color: white;
     padding: 5px;
-    border-radius: 5px
+    border-radius: 5px;
+    opacity: .75;
 }
