@@ -11,6 +11,8 @@
 
 **Note:** Data Source Credit for Tectonic Plates [repo](https://github.com/fraxen/tectonicplates): Hugo Ahlenius, Nordpil and Peter Bird
 
-![Step 1 Map]()
+## Step 1 Map
+![Step 1 Map](Leaflet-Step-1/static/images/map-earthquakes.png)
 
-![Step 2 Map()
+## Step 2 Map
+![Step 2 Map](Leaflet-Step-2/static/images/map-tectonic_plates.png)
