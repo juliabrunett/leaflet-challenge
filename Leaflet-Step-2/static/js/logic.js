@@ -33,14 +33,6 @@ function colorCircle(depth) {
     return color;
 };
 
-// Define map style for tectonic plates layer
-var mapStyle = {
-    color: "white",
-    fillColor: "pink",
-    fillOpacity: 0.5,
-    weight: 1.5
-};
-
 // Pull in tectonic plates data
 d3.json(tectonic_plates_link).then(function(plates_data) {
     console.log("Plates Data", plates_data);
@@ -50,10 +42,12 @@ d3.json(tectonic_plates_link).then(function(plates_data) {
         layer.bindPopup(`<h3> ${feature.properties.PlateName} Plate</h3>`);
     }
 
-    // Define map style for tectonic plates
+    // Define map style for tectonic plates layer
     var mapStyle = {
-        color: "white",
-        weight: 1.5
+        color: "#FF934F",
+        fillColor: "white",
+        fillOpacity: 0.1,
+        weight: 2.5
     };
 
     // Define variable for plates location
@@ -169,7 +163,7 @@ d3.json(tectonic_plates_link).then(function(plates_data) {
     var myMap = L.map("map", {
         center: [39.8283, -98.5795], 
         zoom: 4,
-        layers: [satelliteMap, plates, earthquake_layer],
+        layers: [lightMap, plates, earthquake_layer],
     });
     
     // TITLE

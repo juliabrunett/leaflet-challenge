@@ -103,7 +103,7 @@ d3.json(url).then(data => {
         div.innerHTML = title;
 
         return div
-    }
+    };
 
     // Create Legend
     var legend = L.control({ position: "bottomright" });
