@@ -1,6 +1,8 @@
-
+// LINKS TO DATA:
 // Earthquake data link
-var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+var earthquake_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+// Tectonic Plates Link: https://github.com/fraxen/tectonicplates 
+var tectonic_plates_link = "./static/data/GeoJSON_tectonic/PB2002_plates.json"
 
 // Function to size the circle by magnitude
 function sizeCircle(magnitude) {
@@ -31,12 +33,85 @@ function colorCircle(depth) {
     return color;
 };
 
+var mapStyle = {
+    color: "white",
+    fillColor: "pink",
+    fillOpacity: 0.5,
+    weight: 1.5
+};
 
-d3.json("./static/data/GeoJSON_tectonic/PB2002_plates.json").then(function(plates_data) {
-    console.log(plates_data)
+// Pull in tectonic plates data
+d3.json(tectonic_plates_link).then(function(plates_data) {
+    console.log("Plates Data", plates_data);
 
-    L.geoJson(plates_data).addTo(myMap);
-});
+    function onEachFeature(feature, layer) {
+        layer.bindPopup(`<h3> ${feature.properties.PlateName}</h3>`);
+    }
+
+    // Define map style for tectonic plates
+    var mapStyle = {
+        color: "white",
+        weight: 1.5
+    };
+
+    // Define variable for plates location
+    var plates = L.geoJson(plates_data, {
+        style: mapStyle,
+        onEachFeature: onEachFeature
+    });
+
+    // Access data from link
+    d3.json(earthquake_url).then(function(earthquake_data) {
+        console.log(earthquake_data);
+
+        // Create a cluster group
+        // var cluster_group = L.markerClusterGroup();
+        var features = earthquake_data.features;
+        var depth_array = [];
+
+        earthquake_markers = [];
+
+        // Loop through data
+        for (var i = 0; i < features.length; i++) {
+            // Define variables from earthquake data
+            var coordinates = features[i].geometry.coordinates;
+            var latitude = coordinates[1];
+            var longitude = coordinates[0];
+
+            // Define depth & push to an array
+            var depth = coordinates[2];
+            depth_array.push(depth);
+
+            var properties = features[i].properties;
+
+            // Define place & magnitude
+            var place = properties.place;
+            var magnitude = properties.mag;
+
+            // Current time
+            var time = moment(properties.time);
+
+            // Cluster Group Version
+            // cluster_group.addLayer((L.marker([coordinates[1], coordinates[0]]))
+            //     .bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}`));
+
+            // Create markers
+            earthquake_markers.push( 
+                L.circleMarker([latitude, longitude], {
+                color: "black",
+                weight: 1,
+                fillColor: colorCircle(depth),
+                opactiy: 1,
+                fillOpacity: 1,
+                radius: sizeCircle(magnitude)
+            }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}<br/>Depth: ${depth} km<br>Time: ${time}`)
+            );
+            // console.log(coordinates);
+
+        };
+
+    
+// });
 
     // // Define function to create tectonic plate features on map
     // function createFeatures(plates_data) {
@@ -82,7 +157,10 @@ d3.json("./static/data/GeoJSON_tectonic/PB2002_plates.json").then(function(plate
             id: "mapbox/outdoors-v11",
             accessToken: API_KEY
         });
-        
+
+        var plates_layer = L.layerGroup(plates);
+        var earthquake_layer = L.layerGroup(earthquake_markers);
+
         // Define base maps object
         var baseMaps = {
             "Light Map": lightMap,
@@ -92,70 +170,23 @@ d3.json("./static/data/GeoJSON_tectonic/PB2002_plates.json").then(function(plate
         };
 
         // Define overlay maps object
-        // var overlayMaps = {
-        //     "Plates": plates
-        // };
+        var overlayMaps = {
+            "Tectonic Plates": plates,
+            "Earthquakes": earthquake_layer
+        };
         
-        // Map Object
+        // Define Map Object
         var myMap = L.map("map", {
             center: [39.8283, -98.5795], 
             zoom: 4,
-            layers: [satelliteMap],
-        
+            layers: [satelliteMap, plates, earthquake_layer],
         });
         
         // Add control to my map
-        L.control.layers(baseMaps).addTo(myMap);
+        L.control.layers(baseMaps, overlayMaps, {
+            collapsed: false
+        }).addTo(myMap);
         
-
-        
-// Access data from link
-d3.json(url).then(data => {
-    console.log(data);
-
-    // Create a cluster group
-    // var cluster_group = L.markerClusterGroup();
-    var features = data.features;
-    var depth_array = [];
-
-    // Loop through data
-    for (var i = 0; i < features.length; i++) {
-        // Define variables from earthquake data
-        var coordinates = features[i].geometry.coordinates;
-        var latitude = coordinates[1];
-        var longitude = coordinates[0];
-
-        // Define depth & push to an array
-        var depth = coordinates[2];
-        depth_array.push(depth);
-
-        var properties = features[i].properties;
-
-        // Define place & magnitude
-        var place = properties.place;
-        var magnitude = properties.mag;
-
-        // Current time
-        var time = moment(properties.time);
-
-        // Cluster Group Version
-        // cluster_group.addLayer((L.marker([coordinates[1], coordinates[0]]))
-        //     .bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}`));
-
-        // Create markers
-        circles = L.circleMarker([latitude, longitude], {
-            color: "black",
-            weight: 1,
-            fillColor: colorCircle(depth),
-            opactiy: 1,
-            fillOpacity: 1,
-            radius: sizeCircle(magnitude)
-        }).bindPopup(`<h3>${place}</h3><br/>Magnitude: ${magnitude}<br/>Depth: ${depth} km<br>Time: ${time}`).addTo(myMap);
-
-        // console.log(coordinates);
-
-    };
-
     // Create info title
     var info = L.control({position: "topright"});
 
@@ -194,10 +225,13 @@ d3.json(url).then(data => {
     legend.addTo(myMap);
     info.addTo(myMap);
 
-    // Cluster Group Version
-    // myMap.addLayer(cluster_group);
+// Cluster Group Version
+// myMap.addLayer(cluster_group);
 
-    // Beginning Version: Add all to map
-    // L.geoJson(data).addTo(myMap);
+// Beginning Version: Add all to map
+// L.geoJson(data).addTo(myMap);
 });
+        
+
     // }
+});
