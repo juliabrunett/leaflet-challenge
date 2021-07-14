@@ -78,6 +78,23 @@ function colorCircle(depth) {
     return color;
 };
 
+
+d3.json("../../data/GeoJSON_tectonic/PB2002_plates.json").then(plates_data =>
+    console.log(plates_data))
+
+    function createFeatures(plates_data) {
+
+        function onEachFeature(feature, layer) {
+        layer.bindPopup(`<h3> ${feature.properties.PlateName}</h3>`);
+        }
+        var plates = L.geoJSON(plates_data, {
+            onEachFeature: onEachFeature
+        });
+    
+        createMap(plates);
+    }
+        
+
 // Access data from link
 d3.json(url).then(data => {
     console.log(data);
