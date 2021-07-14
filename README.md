@@ -11,6 +11,8 @@
 
 **Note:** Data Source Credit for Tectonic Plates [repo](https://github.com/fraxen/tectonicplates): Hugo Ahlenius, Nordpil and Peter Bird
 
+To run, sign up for a mapbox API key [here](https://www.mapbox.com/).
+
 # Step 1 Map
 ![Step 1 Map](Leaflet-Step-1/static/images/map_earthquakes.png)
 
