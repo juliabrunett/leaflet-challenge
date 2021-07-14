@@ -1,50 +1,3 @@
-// Tile Layer (Light)
-var lightMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-    tileSize: 512,
-    maxZoom: 18,
-    zoomOffset: -1,
-    id: "mapbox/light-v10",
-    accessToken: API_KEY
-});
-
-// Tile Layer (Satellite)
-var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-    tileSize: 512,
-    maxZoom: 18,
-    zoomOffset: -1,
-    id: "mapbox/satellite-v9",
-    accessToken: API_KEY
-});
-
-// Tile Layer (Outdoors)
-var outdoorsMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-    tileSize: 512,
-    maxZoom: 18,
-    zoomOffset: -1,
-    id: "mapbox/outdoors-v11",
-    accessToken: API_KEY
-});
-
-// Define base maps object
-var baseMaps = {
-    "Light Map": lightMap,
-    "Satellite Map": satelliteMap,
-    "Outdoors Map": outdoorsMap
-
-}
-
-// Map Object
-var myMap = L.map("map", {
-    center: [39.8283, -98.5795], 
-    zoom: 4,
-    layers: [satelliteMap],
-
-});
-
-L.control.layers(baseMaps).addTo(myMap);
 
 // Earthquake data link
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
@@ -79,22 +32,83 @@ function colorCircle(depth) {
 };
 
 
-d3.json("../../data/GeoJSON_tectonic/PB2002_plates.json").then(plates_data =>
-    console.log(plates_data))
+d3.json("./static/data/GeoJSON_tectonic/PB2002_plates.json").then(function(plates_data) {
+    console.log(plates_data)
 
-    function createFeatures(plates_data) {
+    L.geoJson(plates_data).addTo(myMap);
+});
 
-        function onEachFeature(feature, layer) {
-        layer.bindPopup(`<h3> ${feature.properties.PlateName}</h3>`);
-        }
-        var plates = L.geoJSON(plates_data, {
-            onEachFeature: onEachFeature
-        });
+    // // Define function to create tectonic plate features on map
+    // function createFeatures(plates_data) {
+
+    //     // On each feature, bind a pop up 
+    //     function onEachFeature(feature, layer) {
+    //         layer.bindPopup(`<h3> ${feature.properties.PlateName}</h3>`);
+    //     }
+    //     var plates = L.geoJSON(plates_data, {
+    //         onEachFeature: onEachFeature
+    //     });
     
-        createMap(plates);
-    }
+    //     createMap(plates);
+    // }
+        
+    // function createMap(plates) {
+        // Tile Layer (Light)
+        var lightMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+            tileSize: 512,
+            maxZoom: 18,
+            zoomOffset: -1,
+            id: "mapbox/light-v10",
+            accessToken: API_KEY
+        });
+        
+        // Tile Layer (Satellite)
+        var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+            tileSize: 512,
+            maxZoom: 18,
+            zoomOffset: -1,
+            id: "mapbox/satellite-v9",
+            accessToken: API_KEY
+        });
+        
+        // Tile Layer (Outdoors)
+        var outdoorsMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+            attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+            tileSize: 512,
+            maxZoom: 18,
+            zoomOffset: -1,
+            id: "mapbox/outdoors-v11",
+            accessToken: API_KEY
+        });
+        
+        // Define base maps object
+        var baseMaps = {
+            "Light Map": lightMap,
+            "Satellite Map": satelliteMap,
+            "Outdoors Map": outdoorsMap
+        
+        };
+
+        // Define overlay maps object
+        // var overlayMaps = {
+        //     "Plates": plates
+        // };
+        
+        // Map Object
+        var myMap = L.map("map", {
+            center: [39.8283, -98.5795], 
+            zoom: 4,
+            layers: [satelliteMap],
+        
+        });
+        
+        // Add control to my map
+        L.control.layers(baseMaps).addTo(myMap);
         
 
+        
 // Access data from link
 d3.json(url).then(data => {
     console.log(data);
@@ -185,4 +199,5 @@ d3.json(url).then(data => {
 
     // Beginning Version: Add all to map
     // L.geoJson(data).addTo(myMap);
-})
+});
+    // }
