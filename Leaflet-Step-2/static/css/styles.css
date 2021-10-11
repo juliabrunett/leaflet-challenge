@@ -12,6 +12,7 @@ body ul a {
     margin-right: 10px;
     margin-left: 10px;
     margin-bottom: 10px;
+    /* z-index: -4; */
 }
 
 /* Make Map whole page */
@@ -19,8 +20,6 @@ body ul a {
 body,
 html {
     height: 100%;
-    
-    
 }
 
 /* Format the legend */
@@ -100,6 +99,20 @@ html {
     text-align: right;
 
 }
+
+/* .dropdown-menu .show {
+    position: fixed;
+    z-index: -4;
+} */
+
+/* .leaflet-top {
+    position: absolute;
+    z-index: -1;
+}
+
+.leaflet-pane {
+    z-index: -2;
+} */
 
 @media (max-width: 768px) {
     #logo {
