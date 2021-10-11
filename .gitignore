@@ -1,5 +1,5 @@
 .DS_Store
-config.js
+# config.js
 config.py
 
 # Byte-compiled / optimized / DLL files
